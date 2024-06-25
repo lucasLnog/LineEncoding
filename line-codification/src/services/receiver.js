@@ -8,7 +8,7 @@ const WebSocket = require('ws');
 const app = express();
 const eventEmmiter = new EventEmitter();
 const port = 5000;
-const route = 'rota';
+const route = '/receive-message';
 
 app.use(cors({
   origin: '*'
@@ -17,10 +17,10 @@ app.use(cors({
 app.use(bodyParser.json());
 
 const server = app.listen(port, ()=>{
-  console.log("Server running on http://localhost:${port}");
+  console.log(`Server running on http://localhost:${port}`);
 });
 
-const wss = new WebSocket({server});
+const wss = new WebSocket.Server({server});
 
 wss.on('connection', (ws)=>{
   console.log("Client Connected")
@@ -36,6 +36,8 @@ wss.on('connection', (ws)=>{
 
 let receivedMessage = '';
 app.post(route, (req, res) =>{
+  console.log('Message Received');
+
   receivedMessage = req.body.message;
   res.status(200).json({status: 'Message Received'});
   eventEmmiter.emit('newMessage', receivedMessage);
